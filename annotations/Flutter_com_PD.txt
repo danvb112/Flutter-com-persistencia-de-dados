@@ -1,0 +1,249 @@
+Flutter com persistencias de dados
+
+- O FLutter nos disponibiliza widgets prontos que serão responsáveis pelo carre-
+gamento de imagens. Dentre as possimibildades comuns, temos quatro opções/cons-
+tantes que já são fornecidas, evitando o trabalho de implementação. Dentre elas,
+remos: Images.network(), que carrega uma imagem online; Image.asset(), que 
+carrega uma imagem de entro do projeto; Além de Image.file() e Image.memory(),
+responsáveis por carregar arquivos a partir do dispositivo de memoria.
+
+- As abordagens mais comuns são a partir de Image.network() ou Image.asset().
+O Image.network() ecige o envio de um argumento src(source), que é uma string
+representando o endereço da imagem online. Já o Image.asset() recebe uma string
+que representa o ditetório de onde a imagem está localizada no projeto.
+
+- Em seguida, precisaremos fazer uma configuração para que o Flutter encontre a
+imagem desejada. Em projetos Flutter, existe um arquivo, chamado pubspec.yaml, 
+que é responsável por fazer toda a configuração do projeto, seja a configuração
+feita inicialmente, definição de dependências e assim por diante.
+
+- Acessaremos o pubspec.yaml na raiz do projeto e encontraremos diversas infor-
+mações, como o nome do projeto, a descrição que foi atribuída, versão do Flutter
+versão do SDK, entre outras. No caso da adição de assets, há uma parte com a 
+instrução flutter na qual encontraremos alguns comentários, incluindo instru-
+ções sobre como ativar os assets. Isso na verdade é bem simples: basta "desco-
+mentarmos" o trecho referente a eles no código.
+
+- O Column() possui uma configuração propria de alinhamento de seus filhos,
+O 'MainAxisAlignment' que significa o alinhamento principal, indica que estamos
+trabalhando com colunas e configurando o alinhamento do eixo vertical. Já o
+'CrossAxisAlignment' ajusta o eixo horizontal.
+
+- O Container() tem uma propriedade 'padding' que permite ajustarmos os espaça-
+mentos internos dos componentes sem ter que implementa-los individualmente.
+Esse padding recebe uma classe 'EdgeInsets' que tem as sua proriedades também.
+
+- Se quisermos passar a mesma cor do tema principal do MaterialApp para algum 
+widget do nosso app, podemos usar dentro da proriedade color o 'Theme' chamando
+a função 'of()' e passando 'context' como argumento, em seguida chamaremos a 
+primaryColor do nosso tema.
+
+- Para colocar um evento em um widget que não possui esse tipo de propriedade,
+como um clique por exemplo, devemos envolve-lo em um outro que permite diversas
+configurações de eventos, chamado 'GestureDetector()'. Com ele, teremos acesso 
+a diversos tipos de eventos, como o 'onTap' que pede uma função callback com a
+qual faremos a navegação.
+
+- Porém usando o 'GestureDetector()' não teremos o efeito de ondulação ao cli-
+carmos no container, para incluirmos esse efeito, ao invés do 'GestureDetector()'
+o substituiremos por outro componente do 'material'  que permite tal comporta-
+mento, chamado 'inkWell()', uma espécie de 'GestureDetector()" do MaterialDesign.
+Ao fazermos isso, a navegação continuará funcionando, mas não conseguiremos o 
+efeito de ondulação esperado.
+
+- Isso acontece pois o 'InkWell()' é um componente que precisa ser envolvido 
+pelo 'Material()'. Além disso, o filho desse componente - no caso o Container()
+não pode ter uma cor, e essa responsabilidade passará a ser do proprio Material()
+
+- Para ajustar a largura do botão para fazer com que ele ocupe toda a extensão 
+do Column(), não existe uma propriedade do proprio RisedButton(), então temos 
+que envolve-lo em outro widget que permita fazer isso. Usaremos o SizedBox(),
+que permite alterarmos o tamanho dos widgets que ele envolve, no caso, usando 
+a propriedade width para alterar a largura do botão. Porém, valores numericos
+não trarão confiabilidade pois pode haver uma tela que seja maior do que o nu-
+mero passado como largura, causando uma desproporção na tela. Nessas situações,
+costuma-se utilizar o 'double.maxFinite' de modo a preenchermos o espaço com 
+seu valor máximo possível.
+
+- Para utilizar o SQlite no flutter precisaremos adicionar duas dependências 
+sendo elas o 'sqflite' e o 'path' dentro do arquivo pubspec.yaml. O sqflite
+fornece algumas classes e funções para interagir com o SQLite, enquanto o path
+oferece funções para conseguirmos definir a localização de armazenamento nesse 
+banco. Isso é necessario pois o path é responsável por pegar os locais de cada
+um ods sistemas de arquivo sem que nos preocupemos com o ambiente para o qual
+estamos desenvolvendo, seja iOS ou Android, o que é bastante útil.
+
+- Para criarmos o banco de dados, precisamos definir no projeto um local respon-
+sável por essa configuração. Sendo assim, criaremos um diretório em "lib" chama-
+do "database". Dentro dele, teremos um arquivo app_database.dart no qual mante-
+remos todo o código.
+
+- Criaremos uma função createDatabase() que, como o nome já diz, será responsá-
+vel por criar o banco. Em seguida, utilizaremos a função getDatabasePath() para
+pegarmos o caminho desse banco. Perceba que, ao fazermos isso, o pacote do
+sqflite será importado automaticamente.
+
+- Quando realizamos esta chamada, nos é devolvido Future<String>, onde a string
+é o próprio caminho. Como já vimos, o Future deve ser acessado por meio do .then(). 
+Ele demanda a implementação de uma função, nesse caso recebendo uma string que 
+chamaremos de dbPath().
+
+- O próximo passo será criarmos o arquivo que representará o banco de dados, al-
+go que será feito usando uma função da dependência path chamada join(). Essa 
+função junta diversas strings que lhe são enviadas via argumento, e sua respon-
+sabilidade é fazer com que essa junção seja compatível com o sistema de arquivos
+(file system) do aparelho. Passaremos como argumento da função join() o debPath
+e o nome do arquivo que representará o banco de dados. É importante que esse 
+arquivo tenha a extensão padrão .db, sendo assim, podemos chamá-lo de bytebank.db.
+Como devolução, receberemos uma string representando o caminho do arquivo, que 
+chamaremos de path.
+
+- Feito isso, poderemos chamar a função openDatabase(), que abrirá o banco de 
+dados. Nela, além de enviarmos o path, teremos que fazer outras chamadas para 
+conseguirmos criar a tabela no momento de abertura do banco e determinarmos a 
+sua versão.
+
+- Para a criação da tabela, usaremos a propriedade onCreate, que recebe uma 
+função que tem como parâmetro um Database (no caso, db) e um inteiro que repre-
+senta a versão (version). No corpo da função, a partir do db, poderemos executar
+algumas instruções referentes ao SQLite. Dentre elas, temos a db.execute(), que
+nos permitirá criar uma Query (um código em SQL).
+
+- Para atualizarmos a lista de contatos, utilizaremos um novo componente que per-
+mitirá essa atualização mesmo com um StatelessWidget.Na documentação do Flutter,
+encontraremos o FutureBuilder, um StatefulWidget que consegue atualizar seu pró-
+prio conteúdo, mas que realiza uma operação assíncrona com a referência de um 
+Future. Ou seja, podemos indicar ao FutureBuilder que queremos realizar a busca 
+de todos os contatos, o que devolverá um Future. Após a execução, ele nos retor-
+nará uma função de callback na qual conseguiremos devolver um widget, no caso a
+nossa própria lista.
+
+- Este componente já possui uma estrutura para fazer execuções assíncronas, da 
+mesma forma que fazemos com nosso banco de dados, e assim pode criar e atualizar
+a tela após a finalização do conteúdo executado no Future.
+
+- Na body da classe ContactsList, comentaremos todo o código referente à lista 
+(ListView.builder()) e passaremos a usar um FutureBuilder(). Dentro dele, adicio
+naremos a propriedade builder que permitirá o acesso a uma função que recebe um 
+objeto do tipo BuildContext, chamado context, e outra referência do tipo 
+AsyncSnapshot, que chamaremos de snapshot.
+
+- Ainda precisamos indicar ao FutureBuilder() o que deverá ser executado, o que
+é feito por meio da propriedade future desse componente. Neste caso, indicaremos
+o findAll(). Assim, quando o FutureBuilder() começar a fazer a sua construção, 
+ele tentará executar a busca de todos os contatos com o método findAll() e, de-
+pois da resposta, modificará o código de callback que adicionaremos ao builder.
+
+- Como o builder espera um Widget, migraremos todo o bloco de código de 
+ListView.builer() para dentro do seu callback.
+
+- Com este código, já conseguiremos testar a aplicação e visualizar algo aconte-
+cendo. Claro, para conseguirmos obter as informações necessárias, não podemos 
+mais trabalhar com a lista usada em ContactsList. Sendo assim, ou pegaremos os 
+dados vindos do FutureBuilder() ou computaremos a lista de contatos. Neste caso,
+trabalharemos diretamente com a primeira abordagem, removendo a linha referente
+à criação da lista.
+
+- A referência de snapshot contém todas as informações da execução do Future que 
+estamos executando e com o qual teremos acesso à lista de contatos. Sendo assim,
+usaremos snapshot.data para acessarmos o conteúdo retornado, indicando qual é o
+tipo esperado - no caso um List<Contact> chamado contacts.
+
+- Quando lidados com requisições assincronas, é normal que possa ser exibido uma
+tela de erro enquanto os dados não são retornados, para evitar essa tela, uma
+alternativa é colocar uma tela de loading. Fazemos isso por meio de um if, que
+enquanto a resposta da requisição for nula, a tela de loading continuara a ser
+exibida. Podemos usar pra isso um "CircularProgressIndicator()", que mostrará um
+circulo girando (Simbolo de um loading). Envolvendo dentro de um column, pode-se
+ajustar a posição desejada para ele.
+
+- Entretanto, existem outras abordagens possíveis. Por exemplo, indicar um valor
+inicial ao invés de uma referência nula. Para isso, no FutureBuilder(), enviare-
+mos um dado inicial a partir da prorpriedade 'initialData', na qual passaremos 
+um valor compatível com o snapshot, nesse caso uma lista vazia List(). Para fa-
+zer esse tipo de implementação, é necessário enviar generics indicando que tipo
+de lista queremos trabalhar na chamada do FutureBuilder, no caso <List<Contacts>>
+
+- Quando executamos uma requisição assíncrona, existem outras possibilidades de 
+se devolver conteúdo para o usuário. Primeiramente, precisaremos acessar a pre-
+sente situação do Future e do nosso callback. Para isso, recebemos o estado da 
+conexão por meio de uma propriedade do snapshot, chamda '.connectionState'. Den-
+tro dela encontraremos constantes que nos ajudarão a identificar o status da co-
+nexão e tomar alguma ação.
+
+- Uma abordagem comum de implementação é a utilização de um switch case. Isso 
+porque, ao receber o snapshot.connectionState, o switch() exigirá a implementa-
+ção de todas as situações possíveis. Assim, em cenários nos quais precisemos de-
+volver outra coisa, estaremos cientes e poderemos colocar algo que faça sentido
+nessa situação (ou até mesmo nada, caso a situação não faça sentido).
+
+- Nos serão apresentadas quatro opções possíveis da conexão entre snapshot e 
+Future. No primeiro caso, ConnectionState.none, o Future ainda não foi executado
+Nesse cenário, é costumeiro colocar algum tipo de widget que permite um clique 
+ou outro tipo de ação, e que dê início ao Future, permitindo a execução das de-
+mais ações. Como esse não é o nosso cenário, manteremos esse caso vazio.
+
+- O segundo caso, ConnectionState.waiting, é um estado no qual verificaremos se
+o Future ainda está carregando e não foi finalizado. Ou seja, aqui poderemos de-
+volver nosso progresso CircularProgressIndicator() (e todo o bloco de código que
+o acompanha).
+
+- O ConnectionState.active ocorre quando nosso snapshot possui um dado disponí-
+vel, mas o Future ainda não foi finalizado. Isso acontece quando utilizamos 
+outra referência, conhecida como stream, que trabalha trazendo pedaços de um 
+carregamento assíncrono, por exemplo no caso do progresso de um download. Como 
+esse não é o nosso caso, manteremos esse caso vazio.
+
+- Por fim, temos ConnectionState.done, que basicamente devolverá a nossa lista. 
+Nesse ponto precisamos tomar um cuidado: estamos cobrindo os cenários comuns re-
+lacionados ao snapshot, mas também precisamos indicar um valor padrão caso ne-
+nhum deles aconteça - algo que, em verdade, não é possível, dado que o snapshot
+sempre atenderá um desses casos. Sendo assim, é comum retornarmos nessas situa-
+ções, um valor nulo (null).
+
+- Porém, imagine que exista alguma mudança no funcionamento do snapshot e o re-
+torno excepcional realmente seja executado? Para o usuário não receber uma tela
+de erro, é interessante retornarmos alguma mensagem genérica, como "Unkown error".
+
+- Para fazermos uma limpeza no banco de dados iremos em app_database.dart, apli-
+caremos uma configuração diretamente na chamada de openDatabase(), onde fazemos 
+a configuração de abertura do banco de dados.
+
+- Dentre as diversas configurações possíveis, uma bastante comum para limpar o 
+banco é a regressão de versão. Note que atualmente estamos na versão 1, mas há 
+possibilidade de aumentar essa versão para 2, 3 e assim por diante, incrementan-
+do esse valor, algo comum quando fazemos algum tipo de atualização, por exemplo
+adicionando novos campos.
+
+- Porém, também podemos ter uma versão mais recente, por exemplo 5, e voltar 
+para uma versão anterior, como 4. Este comportamento é chamado regressão ou 
+onDowngrade:, e nos permite, dentre outras configurações, remover o banco e 
+assim limpá-lo facilmente.
+
+- Para usarmos essa abordagem, passaremos para a propriedade onDowngrade uma 
+constante onDatabaseDowngradeDelete. Porém, não adianta executarmos o código 
+mantendo a versão 1 do banco, já que esse é um comportamento de regressão. 
+Sendo assim, atualizaremos o banco para uma versão mais recente (2), e só 
+depois disso faremos a regressão.
+
+- A técnica do async/await, uma espécie de açúcar sintático, nos permite traba-
+lhar com Future chamando uma função que devolve o valor esperado diretamente 
+para uma variável, eliminando a necessidade do then(). 
+
+- Aprenderemos a separar responsabilidades para camadas mais específicas, prin-
+cipalmente em relação aos comportamentos do do banco de dados. Um padrão comum 
+em diversos projetos, seja em Flutter ou não, é o Data Access Object, mais 
+conhecido como DAO e cuja tradução é objeto de acesso aos dados. Sua proposta é
+ser a camada que mantém os comportamentos de uma entidade, como salvar, buscar 
+e atualizar.
+
+- Portanto, faremos um DAO para o nosso contato. Se no futuro quisermos traba-
+lhar com transferências, criaremos um novo DAO, evitando que o arquivo cresça 
+infinitamente. Para começarmos essa migração, criaremos um novo diretório "dao" 
+dentro da pasta "database" do nosso projeto. Aqui teremos um contact_dao.dart, 
+seguindo o padrão de nomenclatura desse tipo de arquivo, no qual criaremos a 
+classe ContactDao.
+
+- Migraremos para a nova classe todos os comportamentos relacionados ao contato,
+ou seja, os métodos save() e findAll(), e importaremos as bibliotecas necessá-
+rias.
